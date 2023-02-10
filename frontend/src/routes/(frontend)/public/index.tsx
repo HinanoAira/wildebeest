@@ -2,8 +2,9 @@ import { component$ } from '@builder.io/qwik'
 import { MastodonStatus } from '~/types'
 import * as timelines from 'wildebeest/functions/api/v1/timelines/public'
 import Status from '~/components/Status'
-import { loader$ } from '@builder.io/qwik-city'
+import { DocumentHead, loader$ } from '@builder.io/qwik-city'
 import StickyHeader from '~/components/StickyHeader/StickyHeader'
+import { getDocumentHead } from '~/utils/getDocumentHead'
 
 export const statusesLoader = loader$<{ DATABASE: D1Database; domain: string }, Promise<MastodonStatus[]>>(
 	async ({ platform, html }) => {
@@ -40,3 +41,15 @@ export default component$(() => {
 		</>
 	)
 })
+
+export const requestLoader = loader$(async ({ request }) => request)
+
+export const head: DocumentHead = ({ getData }) => {
+	const { url } = getData(requestLoader)
+	return getDocumentHead({
+		title: 'Federated timeline - Wildebeest',
+		og: {
+			url,
+		},
+	})
+}

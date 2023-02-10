@@ -1,8 +1,9 @@
 import { $, component$, useClientEffect$, useSignal } from '@builder.io/qwik'
-import { loader$ } from '@builder.io/qwik-city'
+import { DocumentHead, loader$ } from '@builder.io/qwik-city'
 import * as timelines from 'wildebeest/functions/api/v1/timelines/public'
 import Status from '~/components/Status'
 import type { MastodonStatus } from '~/types'
+import { getDocumentHead } from '~/utils/getDocumentHead'
 import { getErrorHtml } from '~/utils/getErrorHtml/getErrorHtml'
 
 export const statusesLoader = loader$<{ DATABASE: D1Database; domain: string }, Promise<MastodonStatus[]>>(
@@ -86,3 +87,15 @@ export const StatusesPanel = component$(({ initialStatuses }: StatusesPanelProps
 		</>
 	)
 })
+
+export const requestLoader = loader$(async ({ request }) => request)
+
+export const head: DocumentHead = ({ getData }) => {
+	const { url } = getData(requestLoader)
+	return getDocumentHead({
+		title: 'Explore - Wildebeest',
+		og: {
+			url,
+		},
+	})
+}
